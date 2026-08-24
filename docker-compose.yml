@@ -1,0 +1,73 @@
+version: "3.9"
+
+services:
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql-server
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "YourStrong!Passw0rd"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P \"YourStrong!Passw0rd\" -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: src/AuthService/AuthService.Api/Dockerfile
+    container_name: auth-service
+    depends_on:
+      sql-server:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "Server=sql-server,1433;Database=AuthDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;"
+      JwtSettings__SecretKey: "REPLACE_THIS_WITH_A_LONG_RANDOM_SECRET_AT_LEAST_32_CHARS"
+      JwtSettings__Issuer: "AuthService"
+      JwtSettings__Audience: "MicroservicesClients"
+      BootstrapAdmin__Email: "admin@example.com"
+      BootstrapAdmin__Password: "Admin@12345"
+    ports:
+      - "5001:8080"
+
+  user-service:
+    build:
+      context: .
+      dockerfile: src/UserService/UserService.Api/Dockerfile
+    container_name: user-service
+    depends_on:
+      sql-server:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "Server=sql-server,1433;Database=UserDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;"
+      JwtSettings__SecretKey: "REPLACE_THIS_WITH_A_LONG_RANDOM_SECRET_AT_LEAST_32_CHARS"
+      JwtSettings__Issuer: "AuthService"
+      JwtSettings__Audience: "MicroservicesClients"
+    ports:
+      - "5002:8080"
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: src/ApiGateway/Dockerfile
+    container_name: api-gateway
+    depends_on:
+      - auth-service
+      - user-service
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Docker"
+      ASPNETCORE_URLS: "http://+:8080"
+    ports:
+      - "5000:8080"
+
+volumes:
+  sql-data:

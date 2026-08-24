@@ -1,0 +1,26 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ApiGateway/ApiGateway.csproj" />
+  </Folder>
+  <Folder Name="/src/AuthService/">
+    <Project Path="src/AuthService/AuthService.Api/AuthService.Api.csproj" />
+    <Project Path="src/AuthService/AuthService.Application/AuthService.Application.csproj" />
+    <Project Path="src/AuthService/AuthService.Domain/AuthService.Domain.csproj" />
+    <Project Path="src/AuthService/AuthService.Infrastructure/AuthService.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/ProjectService/">
+    <Project Path="src/ProjectService/ProjectService.Api/ProjectService.Api.csproj" />
+    <Project Path="src/ProjectService/ProjectService.Application/ProjectService.Application.csproj" />
+    <Project Path="src/ProjectService/ProjectService.Domain/ProjectService.Domain.csproj" />
+    <Project Path="src/ProjectService/ProjectService.Infrastructure/ProjectService.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="src/Shared/Shared.Auth/Shared.Auth.csproj" />
+  </Folder>
+  <Folder Name="/src/UserService/">
+    <Project Path="src/UserService/UserService.Api/UserService.Api.csproj" />
+    <Project Path="src/UserService/UserService.Application/UserService.Application.csproj" />
+    <Project Path="src/UserService/UserService.Domain/UserService.Domain.csproj" />
+    <Project Path="src/UserService/UserService.Infrastructure/UserService.Infrastructure.csproj" />
+  </Folder>
+</Solution>
