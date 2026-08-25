@@ -3,7 +3,7 @@ name: Deploy ApiGateway
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - 'src/ApiGateway/**'
       - 'src/Shared/**'
