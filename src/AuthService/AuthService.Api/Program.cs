@@ -81,12 +81,8 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.Migrate();
     await IdentitySeeder.SeedAsync(scope.ServiceProvider);
 }
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth Service API v1"));
-}
+app.UseSwagger();
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth Service API v1"));
 
 app.UseForwardedHeaders();
 app.UseHttpsRedirection();
