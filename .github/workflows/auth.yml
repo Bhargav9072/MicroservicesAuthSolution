@@ -1,0 +1,40 @@
+name: Deploy AuthService
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - master
+    paths:
+      - 'src/AuthService/**'
+      - 'src/Shared/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore Packages
+        run: dotnet restore src/AuthService/AuthService.Api/AuthService.Api.csproj
+
+      - name: Build Project
+        run: dotnet build src/AuthService/AuthService.Api/AuthService.Api.csproj -c Release --no-restore
+
+      - name: Publish Project
+        run: dotnet publish src/AuthService/AuthService.Api/AuthService.Api.csproj -c Release -o publish
+
+      - name: Deploy To Azure
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ms-auth-api
+          publish-profile: ${{ secrets.AUTH_PUBLISH_PROFILE }}
+          package: publish
