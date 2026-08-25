@@ -1,0 +1,40 @@
+name: Deploy ProjectService
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - master
+    paths:
+      - 'src/ProjectService/**'
+      - 'src/Shared/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore Packages
+        run: dotnet restore src/ProjectService/ProjectService.Api/ProjectService.Api.csproj
+
+      - name: Build Project
+        run: dotnet build src/ProjectService/ProjectService.Api/ProjectService.Api.csproj -c Release --no-restore
+
+      - name: Publish Project
+        run: dotnet publish src/ProjectService/ProjectService.Api/ProjectService.Api.csproj -c Release -o publish
+
+      - name: Deploy To Azure
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ms-project-api
+          publish-profile: ${{ secrets.PROJECT_PUBLISH_PROFILE }}
+          package: publish
