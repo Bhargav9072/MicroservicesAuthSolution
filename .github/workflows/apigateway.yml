@@ -1,6 +1,7 @@
 name: Deploy ApiGateway
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
